@@ -1,1 +1,98 @@
+name: GUDUR CROSSING RADAR V8
 
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Runs every 5 minutes
+    # GitHub cron uses UTC
+    - cron: "*/5 * * * *"
+
+jobs:
+  update-railway-data:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 10
+
+    steps:
+
+      # --------------------------------------------------------
+      # 1. DOWNLOAD V8 PROJECT
+      # --------------------------------------------------------
+
+      - name: Checkout V8 repository
+        uses: actions/checkout@v4
+
+
+      # --------------------------------------------------------
+      # 2. INSTALL NODE.JS
+      # --------------------------------------------------------
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+
+      # --------------------------------------------------------
+      # 3. CREATE PACKAGE FILE
+      # --------------------------------------------------------
+
+      - name: Create package.json
+        run: |
+          if [ ! -f package.json ]; then
+            npm init -y
+          fi
+
+
+      # --------------------------------------------------------
+      # 4. INSTALL REQUIRED PACKAGES
+      # --------------------------------------------------------
+
+      - name: Install dependencies
+        run: |
+          npm install axios firebase-admin
+
+
+      # --------------------------------------------------------
+      # 5. RUN GUDUR CROSSING RADAR V8
+      # --------------------------------------------------------
+
+      - name: Run V8 Railway Intelligence
+        env:
+          RAILRADAR_API_KEY: ${{ secrets.RAILRADAR_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          node backend-v8.js
+
+
+      # --------------------------------------------------------
+      # 6. FINISH
+      # --------------------------------------------------------
+
+      - name: V8 update completed
+        if: success()
+        run: |
+          echo "=========================================="
+          echo " GUDUR CROSSING RADAR V8"
+          echo " UPDATE SUCCESSFUL"
+          echo "=========================================="
+          echo "Firebase path: gudur_crossing_v8"
+          echo "=========================================="
+
+
+      # --------------------------------------------------------
+      # 7. ERROR INFORMATION
+      # --------------------------------------------------------
+
+      - name: V8 update failed
+        if: failure()
+        run: |
+          echo "=========================================="
+          echo " GUDUR CROSSING RADAR V8"
+          echo " UPDATE FAILED"
+          echo "=========================================="
+          echo "Check the workflow logs above."
+          echo "=========================================="
