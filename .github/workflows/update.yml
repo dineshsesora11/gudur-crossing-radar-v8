@@ -2,43 +2,22 @@ name: GUDUR CROSSING RADAR V8
 
 on:
   workflow_dispatch:
-
   schedule:
-    # Runs every 5 minutes
-    # GitHub cron uses UTC
     - cron: "*/5 * * * *"
 
 jobs:
   update-railway-data:
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 10
 
     steps:
-
-      # --------------------------------------------------------
-      # 1. DOWNLOAD V8 PROJECT
-      # --------------------------------------------------------
-
       - name: Checkout V8 repository
         uses: actions/checkout@v4
-
-
-      # --------------------------------------------------------
-      # 2. INSTALL NODE.JS
-      # --------------------------------------------------------
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
-
-
-      # --------------------------------------------------------
-      # 3. CREATE PACKAGE FILE
-      # --------------------------------------------------------
+          node-version: "24"
 
       - name: Create package.json
         run: |
@@ -46,31 +25,14 @@ jobs:
             npm init -y
           fi
 
-
-      # --------------------------------------------------------
-      # 4. INSTALL REQUIRED PACKAGES
-      # --------------------------------------------------------
-
       - name: Install dependencies
-        run: |
-          npm install axios firebase-admin
-
-
-      # --------------------------------------------------------
-      # 5. RUN GUDUR CROSSING RADAR V8
-      # --------------------------------------------------------
+        run: npm install axios firebase-admin
 
       - name: Run V8 Railway Intelligence
         env:
           RAILRADAR_API_KEY: ${{ secrets.RAILRADAR_API_KEY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          node backend-v8.js
-
-
-      # --------------------------------------------------------
-      # 6. FINISH
-      # --------------------------------------------------------
+        run: node backend-v8.js
 
       - name: V8 update completed
         if: success()
@@ -81,11 +43,6 @@ jobs:
           echo "=========================================="
           echo "Firebase path: gudur_crossing_v8"
           echo "=========================================="
-
-
-      # --------------------------------------------------------
-      # 7. ERROR INFORMATION
-      # --------------------------------------------------------
 
       - name: V8 update failed
         if: failure()
