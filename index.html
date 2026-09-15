@@ -1,1 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <meta name="theme-color" content="#05070b">
+  <meta
+    name="description"
+    content="Gudur Crossing Radar V8 — Live railway crossing intelligence and upcoming train monitoring."
+  >
+
+  <title>GUDUR CROSSING RADAR V8</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background: #05070b;
+      color: #f5f7fa;
+      min-height: 100vh;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1180px;
+      margin: auto;
+      padding: 14px;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 4px 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.04);
+      font-size: 22px;
+    }
+
+    .brand-title {
+      font-family: "Chakra Petch", sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .brand-subtitle {
+      color: #7e8999;
+      font-size: 11px;
+      margin-top: 2px;
+      letter-spacing: .08em;
+    }
+
+    .controls {
+      display: flex;
+      gap: 7px;
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      background: rgba(255,255,255,.035);
+      color: #dce3eb;
+      cursor: pointer;
+    }
+
+    .control-btn:hover {
+      background: rgba(255,255,255,.08);
+    }
+
+    /* =========================
+       CONNECTION BAR
+    ========================= */
+
+    .connection {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 13px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 13px;
+      background: rgba(255,255,255,.025);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+    }
+
+    .connection-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #777;
+      box-shadow: 0 0 10px rgba(255,255,255,.15);
+    }
+
+    .status-dot.online {
+      background: #32e875;
+      box-shadow: 0 0 12px rgba(50,232,117,.7);
+    }
+
+    .status-dot.warning {
+      background: #ffc247;
+      box-shadow: 0 0 12px rgba(255,194,71,.7);
+    }
+
+    .status-dot.offline {
+      background: #ff4e5b;
+      box-shadow: 0 0 12px rgba(255,78,91,.7);
+    }
+
+    #lastUpdate {
+      color: #8490a0;
+    }
+
+    /* =========================
+       HERO DECISION
+    ========================= */
+
+    .decision-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 330px;
+      border-radius: 25px;
+      border: 1px solid rgba(255,255,255,.09);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.07), transparent 45%),
+        rgba(255,255,255,.025);
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    .decision-card::before {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.035);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .decision-label {
+      position: relative;
+      color: #8a96a7;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    #decisionText {
+      position: relative;
+      margin-top: 12px;
+      font-family: "Chakra Petch", sans-serif;
+      font-size: clamp(48px, 11vw, 90px);
+      font-weight: 700;
+      letter-spacing: .06em;
+      line-height: 1;
+    }
+
+    #decisionSubtext {
+      position: relative;
+      margin-top: 14px;
+      color: #a8b2bf;
+      font-size: 14px;
+    }
+
+    .signal {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .lamp {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.15);
+      background: #161a21;
+    }
+
+    .lamp.active {
+      background: currentColor;
+      box-shadow: 0 0 20px currentColor;
+    }
+
+    .lamp.go {
+      color: #35e87d;
+    }
+
+    .lamp.warn {
+      color: #ffc247;
+    }
+
+    .lamp.stop {
+      color: #ff4655;
+    }
+
+    /* =========================
+       ACTIVE TRAIN
+    ========================= */
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .section-title h2 {
+      font-family: "Chakra Petch", sans-serif;
+      font-size: 18px;
+      letter-spacing: .04em;
+    }
+
+    .section-title span {
+      color: #687586;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+    }
+
+    .active-card {
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .active-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .train-number {
+      font-family: "JetBrains Mono", monospace;
+      color: #8793a4;
+      font-size: 12px;
+    }
+
+    #activeTrainName {
+      margin-top: 4px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .priority-badge {
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: 10px;
+      font-family: "JetBrains Mono", monospace;
+      background: rgba(255,255,255,.06);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-top: 17px;
+    }
+
+    .metric {
+      padding: 13px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.055);
+    }
+
+    .metric-label {
+      color: #687586;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .metric-value {
+      margin-top: 5px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    /* =========================
+       RADAR
+    ========================= */
+
+    .radar-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .radar-card {
+      min-height: 370px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.025);
+      padding: 17px;
+    }
+
+    .radar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .gate-name {
+      font-family: "Chakra Petch", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .gate-direction {
+      color: #778394;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9px;
+      margin-top: 3px;
+    }
+
+    .gate-status {
+      padding: 6px 9px;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9px;
+      font-weight: 700;
+      background: rgba(255,255,255,.05);
+    }
+
+    .radar {
+      position: relative;
+      height: 250px;
+      margin-top: 15px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.06);
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        #070a10;
+      background-size: 25px 25px;
+    }
+
+    .radar::before,
+    .radar::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 50%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .radar::before {
+      width: 150px;
+      height: 150px;
+    }
+
+    .radar::after {
+      width: 70px;
+      height: 70px;
+    }
+
+    .radar-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: rgba(255,255,255,.08);
+    }
+
+    .radar-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #f5f7fa;
+      box-shadow: 0 0 18px rgba(255,255,255,.8);
+      z-index: 3;
+    }
+
+    .train-blip {
+      position: absolute;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      transform: translateX(-50%);
+      border-radius: 5px;
+      background: #ff4655;
+      box-shadow: 0 0 22px rgba(255,70,85,.85);
+      z-index: 4;
+      display: none;
+    }
+
+    .train-blip::after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border: 1px solid rgba(255,70,85,.25);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: scale(1.35);
+        opacity: .2;
+      }
+    }
+
+    .radar-distance {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      color: #697687;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9px;
+    }
+
+    .gate-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      color: #8793a3;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+    }
+
+    /* =========================
+       UPCOMING
+    ========================= */
+
+    .upcoming-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .upcoming-empty {
+      padding: 25px;
+      text-align: center;
+      color: #687586;
+      border: 1px dashed rgba(255,255,255,.1);
+      border-radius: 15px;
+    }
+
+    .train-row {
+      display: grid;
+      grid-template-columns: 70px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.065);
+      border-radius: 15px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .train-time {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .train-details strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .train-details small {
+      display: block;
+      color: #718092;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9px;
+      margin-top: 3px;
+    }
+
+    .eta {
+      text-align: right;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* =========================
+       STATS
+    ========================= */
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .stat-card {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.07);
+      background: rgba(255,255,255,.025);
+    }
+
+    .stat-card small {
+      color: #697687;
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-top: 7px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+    }
+
+    /* =========================
+       SAFETY
+    ========================= */
+
+    .safety {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,194,71,.15);
+      background: rgba(255,194,71,.035);
+    }
+
+    .safety-title {
+      font-family: "Chakra Petch", sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .safety p {
+      color: #9aa5b3;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 7px;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      padding: 28px 4px 20px;
+      text-align: center;
+      color: #586575;
+      font-size: 10px;
+      font-family: "JetBrains Mono", monospace;
+      line-height: 1.7;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 800px) {
+      .radar-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app {
+        padding: 10px;
+      }
+
+      .brand-title {
+        font-size: 16px;
+      }
+
+      .brand-subtitle {
+        font-size: 9px;
+      }
+
+      .decision-card {
+        min-height: 300px;
+        padding: 25px 15px;
+      }
+
+      .train-row {
+        grid-template-columns: 58px 1fr auto;
+      }
+
+      #activeTrainName {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- HEADER -->
+    <header class="topbar">
+
+      <div class="brand">
+        <div class="brand-mark">🚦</div>
+
+        <div>
+          <div class="brand-title">
+            GUDUR CROSSING RADAR
+          </div>
+
+          <div class="brand-subtitle">
+            GDR // CROSSING INTELLIGENCE // V8
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button
+          class="control-btn"
+          id="soundBtn"
+          title="Sound"
+        >🔊</button>
+
+        <button
+          class="control-btn"
+          id="themeBtn"
+          title="Theme"
+        >☾</button>
+
+        <button
+          class="control-btn"
+          id="fullscreenBtn"
+          title="Fullscreen"
+        >⛶</button>
+      </div>
+
+    </header>
+
+
+    <!-- CONNECTION -->
+    <div class="connection">
+
+      <div class="connection-left">
+
+        <span
+          id="connectionDot"
+          class="status-dot"
+        ></span>
+
+        <span id="connectionText">
+          CONNECTING TO RADAR...
+        </span>
+
+      </div>
+
+      <span id="lastUpdate">
+        --:--:--
+      </span>
+
+    </div>
+
+
+    <!-- MAIN DECISION -->
+    <section class="decision-card">
+
+      <div class="decision-label">
+        CROSSING DECISION
+      </div>
+
+      <div id="decisionText">
+        WAITING
+      </div>
+
+      <div id="decisionSubtext">
+        Waiting for live railway intelligence...
+      </div>
+
+      <div class="signal">
+
+        <div
+          id="lampGo"
+          class="lamp go"
+        ></div>
+
+        <div
+          id="lampWarn"
+          class="lamp warn"
+        ></div>
+
+        <div
+          id="lampStop"
+          class="lamp stop"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ACTIVE TRAIN -->
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>ACTIVE TRAIN</h2>
+
+        <span id="activeCorridor">
+          NO ACTIVE TRAIN
+        </span>
+
+      </div>
+
+      <div class="active-card">
+
+        <div class="active-top">
+
+          <div>
+
+            <div
+              id="activeTrainNumber"
+              class="train-number"
+            >
+              TRAIN ----
+            </div>
+
+            <div id="activeTrainName">
+              No train currently affecting crossing
+            </div>
+
+          </div>
+
+          <div
+            id="priorityBadge"
+            class="priority-badge"
+          >
+            STANDBY
+          </div>
+
+        </div>
+
+
+        <div class="metrics">
+
+          <div class="metric">
+            <div class="metric-label">Speed</div>
+            <div
+              id="activeSpeed"
+              class="metric-value"
+            >-- km/h</div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">Distance</div>
+            <div
+              id="activeDistance"
+              class="metric-value"
+            >-- km</div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">ETA</div>
+            <div
+              id="activeEta"
+              class="metric-value"
+            >-- min</div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">Direction</div>
+            <div
+              id="activeDirection"
+              class="metric-value"
+            >--</div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- RADAR -->
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>LIVE GATE RADAR</h2>
+
+        <span>
+          REAL-TIME APPROACH MONITOR
+        </span>
+
+      </div>
+
+
+      <div class="radar-grid">
+
+
+        <!-- CHENNAI -->
+        <div class="radar-card">
+
+          <div class="radar-head">
+
+            <div>
+
+              <div class="gate-name">
+                CHENNAI GATE
+              </div>
+
+              <div class="gate-direction">
+                SOUTH-EAST // MAIN LINE
+              </div>
+
+            </div>
+
+            <div
+              id="chennaiStatus"
+              class="gate-status"
+            >
+              OPEN
+            </div>
+
+          </div>
+
+
+          <div class="radar">
+
+            <div class="radar-line"></div>
+
+            <div class="radar-center"></div>
+
+            <div
+              id="chennaiBlip"
+              class="train-blip"
+            ></div>
+
+            <div class="radar-distance">
+              <span>5 KM</span>
+              <span>GATE</span>
+              <span>0 KM</span>
+            </div>
+
+          </div>
+
+
+          <div class="gate-info">
+
+            <span>
+              TRAIN:
+              <b id="chennaiTrain">---</b>
+            </span>
+
+            <span>
+              DIST:
+              <b id="chennaiDistance">--</b>
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- TIRUPATI -->
+        <div class="radar-card">
+
+          <div class="radar-head">
+
+            <div>
+
+              <div class="gate-name">
+                TIRUPATI GATE
+              </div>
+
+              <div class="gate-direction">
+                SOUTH-WEST // BRANCH
+              </div>
+
+            </div>
+
+            <div
+              id="tirupatiStatus"
+              class="gate-status"
+            >
+              OPEN
+            </div>
+
+          </div>
+
+
+          <div class="radar">
+
+            <div class="radar-line"></div>
+
+            <div class="radar-center"></div>
+
+            <div
+              id="tirupatiBlip"
+              class="train-blip"
+            ></div>
+
+            <div class="radar-distance">
+              <span>5 KM</span>
+              <span>GATE</span>
+              <span>0 KM</span>
+            </div>
+
+          </div>
+
+
+          <div class="gate-info">
+
+            <span>
+              TRAIN:
+              <b id="tirupatiTrain">---</b>
+            </span>
+
+            <span>
+              DIST:
+              <b id="tirupatiDistance">--</b>
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- UPCOMING -->
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>UPCOMING TRAINS</h2>
+
+        <span id="upcomingCount">
+          0 TRAINS
+        </span>
+
+      </div>
+
+      <div
+        id="upcomingList"
+        class="upcoming-list"
+      >
+
+        <div class="upcoming-empty">
+          Loading RailRadar board...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>TODAY'S ACTIVITY</h2>
+
+        <span>
+          V8 STATISTICS
+        </span>
+
+      </div>
+
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+
+          <small>
+            Board Trains
+          </small>
+
+          <strong id="statBoard">
+            --
+          </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <small>
+            Live Requests
+          </small>
+
+          <strong id="statLive">
+            --
+          </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <small>
+            Route Requests
+          </small>
+
+          <strong id="statRoute">
+            --
+          </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <small>
+            Processing
+          </small>
+
+          <strong id="statProcessing">
+            --s
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SAFETY -->
+    <section class="section">
+
+      <div class="safety">
+
+        <div class="safety-title">
+          ⚠️ SAFETY ADVISORY
+        </div>
+
+        <p>
+          Crossing status is generated from live railway
+          intelligence and GPS data. Always visually confirm
+          railway traffic and barriers before crossing.
+          Never depend on this application alone for safety.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+      <div>
+        GUDUR CROSSING RADAR V8
+      </div>
+
+      <div>
+        LIVE RAILWAY INTELLIGENCE • GUDUR, ANDHRA PRADESH
+      </div>
+
+      <div>
+        DATA REFRESH • APPROX. EVERY 5 MINUTES
+      </div>
+
+    </footer>
+
+  </main>
+
+
+  <!-- V8 JAVASCRIPT -->
+  <script src="script.js"></script>
+
+</body>
+</html>
